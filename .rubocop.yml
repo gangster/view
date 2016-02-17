@@ -1,0 +1,16 @@
+Documentation:
+  Enabled: false
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/test_app/**/*'
+    - 'spec/spec_helper.rb'
+    - 'tmp/**/*'
+    - 'view.gemspec'
+  TargetRubyVersion: 2.3
+
+Style/Encoding:
+  Enabled: true
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: always

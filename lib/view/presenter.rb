@@ -1,3 +1,5 @@
+# encoding: utf-8
+# frozen_string_literal: true
 module View
   class Presenter
     def initialize(presented)
@@ -5,6 +7,7 @@ module View
     end
 
     protected
+
     # Q:  Why isn't to_param being handled by method_missing?!  Investigate.
     def to_param
       presented.to_param
@@ -17,7 +20,7 @@ module View
         super
       end
     end
-    
+
     attr_reader :presented
   end
 end

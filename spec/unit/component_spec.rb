@@ -1,3 +1,5 @@
+# encoding: utf-8
+# frozen_string_literal: true
 module View
   describe Component do
     describe '#initialize' do
@@ -10,8 +12,9 @@ module View
     end
 
     describe '#display' do
+      let(:error) { 'Abstract method.  Implement in subclasses' }
       it 'raises a not implemented error' do
-        expect { Component.new({}).display }.to raise_error 'Abstract method.  Implement in subclasses'
+        expect { Component.new({}).display }.to raise_error error
       end
     end
   end
