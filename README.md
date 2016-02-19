@@ -117,11 +117,11 @@ _app/components/hello.rb_
   class Hello < View::Component    
     def display
       render partial: 'components/hello', 
-             locals: { audience: audience }
+             locals: { audience: which_audience }
     end
 
     private
-    def audience
+    def which_audience
       if user_signed_in?
         current_user.first_name
       else
