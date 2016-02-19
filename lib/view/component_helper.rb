@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 module View
   module ComponentHelper
-    include ActionView::Helpers::CaptureHelper
     include ActionView::Context
+    include ActionView::Helpers::CaptureHelper
     include ActionView::Helpers::TextHelper
     extend ActiveSupport::Concern
 

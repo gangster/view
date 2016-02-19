@@ -4,12 +4,18 @@ require 'view/view_helpers'
 
 module View
   class Component
+
     def self.presenter(presenter_class)
       self.presenter = presenter_class
     end
 
     def initialize(state = {})
-      @state = state
+      copy = state.deep_dup
+      state.keys.each do |key|
+        self.class.send :define_method, key.to_sym do
+          copy[key]
+        end
+      end
     end
 
     def display
@@ -19,9 +25,5 @@ module View
     def present(object)
       self.class.presenter.new(object)
     end
-
-    protected
-
-    attr_reader :state
   end
 end

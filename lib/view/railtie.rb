@@ -7,6 +7,7 @@ module View
     initializer 'extend ApplicationHelper' do
       ApplicationHelper.send :include, View::ComponentHelper
       View::Component.send :include, View::ViewHelpers
+      View::Component.send :include, View::ComponentHelper
     end
   end
 end

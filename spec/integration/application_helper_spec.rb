@@ -17,11 +17,11 @@ describe ApplicationHelper do
     end
 
     context '#component' do
-      let(:state) { { test: 'hi' } }
+      let(:state) { { oh: 'hi' } }
       let!(:component_subclass) do
         Class.new(View::Component) do
           def display
-            content_tag(:p, state[:test])
+            content_tag(:p, oh)
           end
         end
       end
