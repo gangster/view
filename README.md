@@ -1,15 +1,53 @@
 # View
 
-The missing view layer in Ruby on Rails
+Object-oriented view helpers in Ruby on Rails
 
 ## Overview
 
-This tiny little library consists of two primary abstractions,  `View::Component` and `View::Presenter`, which
-enable you to better decouple your presentation logic from your erb/haml/slim/etc templates.  It's light weight,
-easy to use, and provides a clean separation of concerns by employing basic OO principles to your view layer.
+This tiny little library consists of two abstractions,  `View::Component` and `View::Presenter`, which
+work together to encourage a more object-oriented approach to constructing your Rails views.   It has a
+few conventions that you're encouraged to follow, but many decisions are still left up to you and you're
+not required to use both abstractions.  Use what you need, and throw the rest away.
+
+
+
+## Motivation
+
+In nearly every Rails application I've worked on, both of my own making and that of others, the view layer
+has consistently been a source of shame, confusion and fear.   This is especially true on larger code bases touched
+by numerous people with varying skill sets over a non-trivial span of time.   In other words, real production
+applications.   
+
+This is because vanilla Rails doesn't give us a great set of tools or conventions for constructing our 
+views in a maintanable, object-oriented way.   The Conventional Rails Application Practice (henceforth known as CRAP) 
+for building views is to drop your markup in erb/haml/slim/etc templates along with any conditional logic you need to 
+render the right thing in the right place.   And if you need to transform some piece of data on your model,
+such as a date/time (and are a good little developer and know that doing this in the model makes you look retarded), 
+then the CRAPpy thing to do would be to delegate that mess up to a view helper.  
+
+But this CRAPpy approach leads to a number of problems, especially in the long-term.   And everyone who has been working
+with Rails longer than a month already knows this.    Countless blog articles have been written on this topic.  Many other
+talented developers have released libraries that attempt to tackle this problem in whole or in part.   
+
+Perhaps the most "famous" library is Draper, which bills itself as an object-oriented view-model framework for rails.  
+Maybe you've used it, and possibly even had some success with it.   Personally, I find it heavy, not very 
+object-oriented at all, encourages bad application design by mixing concerns where it shouldn't, and well, the list
+just goes on.   And apparently, [I'm not the only one in this boat](http://thepugautomatic.com/2014/03/draper/).  
+
+Also gaining traction is Nick Sutterer's (@apotonick) cells, which is the view layer of the Trailblazer framework.   Cells
+are described as being "View Components for Ruby on Rails" and that's a really great start.   Because without a doubt,
+components are exactly the abstraction we want when building our views.   But once I started to dig into the documentation
+and the code, it started to make me feel icky.   Specifically, the manner in which you invoke a cell (aka a component), is
+in my view, overly complex and convoluted.   Cells seem to be overloaded with responsibilities and support for more than a
+single render method seems totally unnecessary and undesirable.   Nick is a great developer and I have a ton of respect for
+him, but when I look at the code for cells, I'm kind of left feeling it's maybe a bit over-engineered.
+
+At the end of the day, what I want is a way to describe views as logical, representational entities and Components are 
+exactly the right abstraction for that.   I also believe that the role of a Component is to display markup based
+on its state.  That's it.  Any knowledge of how to transform that state lives in another object, the Presenter.  Conversely,
+the presenter should not be in the business of rendering markup.  
 
 ## Components
-
 
 Components have a single responsibility, and that is to render markup.   Component objects expose a single public 
 instance method named `#display`, which returns a string of markup to be rendered to the DOM.    How that markup gets 
@@ -254,7 +292,7 @@ _app/components/user_detail.rb_
     presenter UserDetailPresenter
 
     def display
-      render partial: 'views/components/user_detail/_detail.html.erb, 
+      render partial: 'views/components/user_detail/_detail.html.erb', 
              locals: { user: present(user) }
     end    
   end
@@ -277,3 +315,7 @@ _app/views/components/user_detail/_detail.html.erb_
 ```erb
   <p><%= user.name %> created on <%= user.formatted_created_at %></p>
 ```
+
+### Caching
+
+TODO:  Figure it out =)
