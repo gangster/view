@@ -4,9 +4,12 @@ require 'view/view_helpers'
 
 module View
   class Component
+    include ComponentHelper
+
+    cattr_reader :presenter_class
 
     def self.presenter(presenter_class)
-      self.presenter = presenter_class
+      @@presenter_class = presenter_class
     end
 
     def initialize(state = {})
@@ -20,8 +23,8 @@ module View
 
     def display
       capture do
-        out =  html.respond_to?(:flatten) ? safe_join(html) : html
-        concat out
+        out = html
+        concat out.respond_to?(:flatten) ? safe_join(out) : out
       end
     end
 
@@ -30,7 +33,7 @@ module View
     end
 
     def present(object)
-      self.class.presenter.new(object)
+      self.class.presenter_class.new(object)
     end
   end
 end

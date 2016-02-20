@@ -6,9 +6,14 @@ module View
   class Railtie < Rails::Railtie
     initializer 'extend ApplicationHelper' do
       config.eager_load_namespaces << View
-      ApplicationHelper.send :include, View::ComponentHelper
+
+      ActiveSupport.on_load(:action_view) do
+        self.class_eval do
+          include View::ComponentHelper
+        end
+      end
+
       View::Component.send :include, View::ViewHelpers
-      View::Component.send :include, View::ComponentHelper
     end
   end
 end

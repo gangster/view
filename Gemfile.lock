@@ -104,7 +104,11 @@ GEM
     rake (10.5.0)
     render_anywhere (0.0.12)
       rails (>= 3.0.7)
-    rspec-core (3.4.2)
+    rspec (3.4.0)
+      rspec-core (~> 3.4.0)
+      rspec-expectations (~> 3.4.0)
+      rspec-mocks (~> 3.4.0)
+    rspec-core (3.4.3)
       rspec-support (~> 3.4.0)
     rspec-expectations (3.4.0)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -148,10 +152,11 @@ PLATFORMS
 
 DEPENDENCIES
   pry-rails
+  rspec
   rspec-rails
   rubocop
   sqlite3
   view!
 
 BUNDLED WITH
-   1.11.0
+   1.11.2
