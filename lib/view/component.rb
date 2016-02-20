@@ -19,6 +19,13 @@ module View
     end
 
     def display
+      capture do
+        out =  html.respond_to?(:flatten) ? safe_join(html) : html
+        concat out
+      end
+    end
+
+    def html
       raise 'Abstract method.  Implement in subclasses'
     end
 

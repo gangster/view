@@ -20,7 +20,7 @@ describe ApplicationHelper do
       let(:state) { { oh: 'hi' } }
       let!(:component_subclass) do
         Class.new(View::Component) do
-          def display
+          def html
             content_tag(:p, oh)
           end
         end

@@ -9,10 +9,7 @@ module View
 
     included do
       def component(component_class, state = {})
-        component = component_class.new(state)
-        capture do
-          concat component.display
-        end
+        component_class.new(state).display
       end
     end
   end
