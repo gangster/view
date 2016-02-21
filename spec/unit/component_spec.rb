@@ -5,8 +5,10 @@ require 'rails_helper'
 
 module View
   describe Component do
+    let(:request) { Rack::MockRequest.new('/') }
+    let(:state) { { some: 'state', request: request } }
+
     describe '#initialize' do
-      let(:state) { { some: 'state' } }
 
       it 'initializes state instance variable with state' do
         component = Component.new(state)
@@ -17,13 +19,13 @@ module View
     describe '#display' do
       let(:error) { 'Abstract method.  Implement in subclasses' }
       it 'raises a not implemented error' do
-        expect { Component.new({}).display }.to raise_error error
+        expect { Component.new(state).display }.to raise_error error
       end
     end
 
     describe '#component' do
       it 'responds to #component' do
-        expect(Component.new({})).to respond_to :component
+        expect(Component.new(state)).to respond_to :component
       end
     end
   end

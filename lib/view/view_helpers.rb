@@ -8,6 +8,8 @@ module View
     extend ActiveSupport::Concern
     included do
       include Rails.application.routes.url_helpers
+      include Rails.application.routes.mounted_helpers
+
       include ActionView::Helpers::ActiveModelHelper
       include ActionView::Helpers::ActiveModelInstanceTag
       include ActionView::Helpers::AssetTagHelper
@@ -15,6 +17,7 @@ module View
       include ActionView::Helpers::AtomFeedHelper
       include ActionView::Helpers::CacheHelper
       include ActionView::Helpers::CaptureHelper
+      include ActionView::Helpers::ControllerHelper
       include ActionView::Helpers::CsrfHelper
       include ActionView::Helpers::DateHelper
       include ActionView::Helpers::DebugHelper
@@ -32,7 +35,6 @@ module View
       include ActionView::Helpers::TranslationHelper
       include ActionView::Helpers::UrlHelper
       include ActionView::Context
-      include RenderAnywhere
       def default_url_options
         ActionMailer::Base.default_url_options
       end

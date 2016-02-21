@@ -2,6 +2,8 @@ PATH
   remote: .
   specs:
     view (0.1.0)
+      backport_new_renderer
+      binding_of_caller
       rails (~> 4.2.5.1)
       render_anywhere
 
@@ -45,9 +47,14 @@ GEM
       tzinfo (~> 1.1)
     arel (6.0.3)
     ast (2.2.0)
+    backport_new_renderer (1.0.0)
+      rails
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
     builder (3.2.2)
     coderay (1.1.0)
     concurrent-ruby (1.0.0)
+    debug_inspector (0.0.2)
     diff-lcs (1.2.5)
     erubis (2.7.0)
     globalid (0.3.6)

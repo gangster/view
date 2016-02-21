@@ -13,12 +13,15 @@ module View
     end
 
     def initialize(state = {})
-      copy = state.deep_dup
-      state.keys.each do |key|
+
+      @state = state.deep_dup
+      @state.keys.each do |key|
         self.class.send :define_method, key.to_sym do
-          copy[key]
+          @state[key]
         end
       end
+      # I hate this, but it works for now.  Fucking devise.
+      @request = @state[:request] || binding.of_caller(2).eval('request')
     end
 
     def display
@@ -32,8 +35,23 @@ module View
       raise 'Abstract method.  Implement in subclasses'
     end
 
+    def render(*args)
+
+      options = args.extract_options!
+      options.merge!({ locals: state })
+      args.push(options)
+      Class.new(ActionController::Base).
+        renderer.new(request.env).
+        render(*args)
+    end
+
+    protected
+
     def present(object)
       self.class.presenter_class.new(object)
     end
+
+    attr_reader :state, :request
+
   end
 end

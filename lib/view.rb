@@ -3,6 +3,7 @@
 require 'view/railtie' if defined?(Rails)
 require 'view/component'
 require 'view/presenter'
+require 'binding_of_caller'
 
 module View
 end
