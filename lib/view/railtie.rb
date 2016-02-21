@@ -10,7 +10,6 @@ module View
       ActiveSupport.on_load(:action_view) do
         self.class_eval do
           include View::ComponentHelper
-          include DeviseHelper if Module.const_defined? 'DeviseHelper'
         end
       end
 
