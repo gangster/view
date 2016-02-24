@@ -20,8 +20,6 @@ module View
           @state[key]
         end
       end
-      # I hate this, but it works for now.  Fucking devise.
-      @request = @state[:request] || binding.of_caller(2).eval('request')
     end
 
     def display
@@ -36,7 +34,6 @@ module View
     end
 
     def render(*args)
-
       options = args.extract_options!
       options.merge!({ locals: state })
       args.push(options)

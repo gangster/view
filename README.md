@@ -30,6 +30,26 @@ This gem here is to help you stop fucking yourself.   It does this by giving you
 organizing your code:  `View::Component` and `View::Presenter`, and they're easy as fuck to use, and I hope
 you'll use them.
 
+### Guidelines & Objectives
+
+It's generally a good idea to follow [Sandi Metz' Rules For Developers](https://robots.thoughtbot.com/sandi-metz-rules-for-developers)
+when building components and presenters:
+
+#### Guidelines
+- Methods less than 5 lines
+- Classes less than 100 lines
+- Only instantiate one object in the controller / One instance variable in view
+- Four method arguments
+ 
+Additionally, components and presenters should:
+
+#### Objectives
+- DRY
+- Easy to test
+- Clarity
+- Easy to find
+- Easy to change
+
 ## Example Application
 
 To see examples of components in action, check out the example Rails app at 
@@ -37,13 +57,17 @@ To see examples of components in action, check out the example Rails app at
 
 ## Components
 
+### Overview
+
+Components are the building blocks for your views.  Another way to look at components is as object-oriented
+helpers for your views.  They have one responsibility and that's to generate markup.  Components should be small, 
+focused, and have an expressive name that clearly describes what part of the view it's responsible for rendering.
+
 ### The Basics
 
-At the center of everything is `View::Component`.   In short, it's the building block you've always wanted.
-You're welcome.  How do they work?
-
-Defining a component is as simple as writing a class that extends `View::Component` and implementing the `html`
-method that returns a string (or an array of strings, more on that later) of markup.  Here's a simple example:
+Defining a component is as simple as extending the `View::Component` class  and implementing the `html`
+method.   This method must return a string (or an array of strings, more on that later) of markup.  
+Here's a simple example:
 
 _app/components/fuck_yeah.rb_
 ```ruby
@@ -72,9 +96,8 @@ _Output:_
 In the example above, the `content_tag` and `link_to` helpers are used to generate the HTML.   In addition to these helpers,
 pretty much every other rails helper you could possibly want is at your disposal, including helpers that depend on the request
 context being available, such as URL helpers and some Devise helpers.  But the star of the show is the `render` helper, which will 
-allow you to render erb/haml/slim/whatever templates if that's how you get down.  Calling `render` inside of a component returns a
-string, instead of writing directly to the output buffer, so we can exploit that behavior to express our markup as templates instead
-of ruby code.   
+allow you to render erb/haml/slim/whatever templates.  Calling `render` inside of a component returns a string, instead of writing 
+directly to the output buffer, and we can exploit that behavior to express our markup as templates instead of ruby code.
 
 Something like this will be very common in your components:
 
@@ -321,21 +344,105 @@ our little `component` method is.   And it's really simple, let's take a look at
 
 ```ruby
 def component(component_class, state = {})
+  state.merge!({ request: request })
   component_class.new(state).display
 end
 ```
 
-As you can see, all it does is instantiate the class you pass in as the first argument, with the state hash you pass in as
-the second argument, and calls the display method.   Knowing that, you could also invoke components like:
+As you can see, the first thing we do is merge the request object into the state.   This serves two purposes.  First, it makes
+the request context available to helpers that need it, such as URL helpers, devise helpers, etc.  And if your component needs
+it for any reason, it can be accessed by calling `#request` inside of your component, which can be helpful if you're doing
+some ninja shit you probably shouldn't be doing.  
+
+Then, all we do is instantiate the component class, pass it the state, and then call display to render the HTML to the DOM and
+that's it.   Knowing that, one could also invoke a component like:
 
 ```erb
-  <%= FuckYeah.new(what: 'Enchiladas').display %>
+  <%= FuckYeah.new(what: 'Enchiladas', request: request).display %>
 ```
 
 and achieve the same results.  How you invoke components is up to you, but if you can stomach using the helper, that is the
 preferred way and will be more future-proof should the component's API change in future versions.
 
 ## Presenters
+
+### Overview
+
+Components are only half the story, because in addition to generating markup, often times you need to transform data into a human-readable format.
+Date and number formatting are common cases, as is truncating strings and joining an array of strings.   Operations like these are a separate
+and distinct concern from generating markup, and thus are handled using a different type of object, `View::Presenter`.
+
+### Presenter basics
+
+### Defining Presenters
+
+Creating a presenter begins with subclassing `View::Presenter`.
+
+_app/presenters/post_presenter.rb_
+```ruby
+class PostPresenter < View::Presenter
+end
+```
+
+Simple enough, but not altogether interesting or useful.   Let's format the created_at timestamp to be a little more human-readable.  By default,
+that timestamp looks something like `Sun, 21 Feb 2016 17:25:28 UTC +00:00`, and what we want is something more like `5 minutes ago`, which we can
+accomplish by using the `time_ago_in_words` helper that Rails provides.   We can do that by adding a method called `formatted_created_at` to the 
+presenter which handles that for us.
+
+_app/presenters/post_presenter.rb_
+```ruby
+class PostPresenter < View::Presenter
+  def formatted_created_at
+    time_ago_in_words(created_at)
+  end
+end
+```
+Notice that we called the `created_at` method without a receiver.   That's because any methods that don't exist on the presenter get automatically 
+delegated to the object being presented.  If implicit receivers both you, or you didn't want to prefix your method name with `formatted_`, this also
+works:
+
+_app/presenters/post_presenter.rb_
+```ruby
+class PostPresenter < View::Presenter
+  def created_at
+    time_ago_in_words(presented.created_at)
+  end
+end
+```
+
+### Instantiating Presenters
+
+To instantiate a presenter, just pass in the object you want to present into the constructor.   Note, that the constructor only accepts a single
+argument, but the object in that argument can be whatever you want.  More often than not, it'll be an ActiveRecord object or collection of objects.
+
+```ruby
+  @post = Post.find(1)
+  PostPresenter.new(post)
+
+```
+
+## Resources / Links
+
+#### Blogs / Videos
+- [Sandi Metz' Rules For Developers](https://robots.thoughtbot.com/sandi-metz-rules-for-developers)
+- [Thoughts about Rails Presenters](https://gist.github.com/somebox/5a7ebf56e3236372eec4)
+- [Presenters from Scratch Railscast](http://railscasts.com/episodes/287-presenters-from-scratch?autoplay=true)
+- [Rails: Presenter Pattern by Jay Fields](http://blog.jayfields.com/2007/03/rails-presenter-pattern.html)
+- [Rails Presenters: filling the Model-View-Controller gap](http://www.inspire.nl/blog/rails-presenters-filling-the-model-view-controller-gap/)
+- [What I dislike about Draper](http://thepugautomatic.com/2014/03/draper/)
+- [Rails Misapprehensions: Helpers are shit.](http://nicksda.apotomo.de/2011/10/rails-misapprehensions-helpers-are-shit/)
+- [Decorators on Rails](http://johnotander.com/rails/2014/03/07/decorators-on-rails/)
+- [RailsConf 2014 - Concerns, Decorators, Presenters, Service Objects, Helpers, Help Me Decide!](https://www.youtube.com/watch?v=bHpVdOzrvkE)
+- [Better Ruby Presenters](http://blog.steveklabnik.com/posts/2011-09-09-better-ruby-presenters)
+- [Decorators Compared To Strategies, Composites, and Presenters](https://robots.thoughtbot.com/decorators-compared-to-strategies-composites-and)
+- [Exhibit vs Presenter](http://mikepackdev.com/blog_posts/31-exhibit-vs-presenter)
+
+#### Prior Art
+- [Draper](https://github.com/drapergem/draper)
+- [Cells](http://github.com/apotonick/cells)
+- [ActivePresenter](https://github.com/jamesgolick/active_presenter)
+- [ActionPresenter](https://github.com/zlw/action_presenter)
+- [etc](https://www.ruby-toolbox.com/categories/rails_presenters)
 
 ### WORK IN PROGRESS.  MORE TO COME ###
 
