@@ -13,8 +13,6 @@ module View
 
     protected
 
-    def presented
-      __getobj__
-    end
+    alias_method :presented, :__getobj__
   end
 end
