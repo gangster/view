@@ -13,11 +13,10 @@ module View
     end
 
     def initialize(state = {})
-
-      @state = state.deep_dup
+      @state = state
       @state.keys.each do |key|
         self.class.send :define_method, key.to_sym do
-          @state[key]
+          state[key]
         end
       end
     end
@@ -35,7 +34,7 @@ module View
 
     def render(*args)
       options = args.extract_options!
-      options.merge!({ locals: state })
+      options.reverse_merge!({ locals: state })
       args.push(options)
       Class.new(ActionController::Base).
         renderer.new(request.env).
