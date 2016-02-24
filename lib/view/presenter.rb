@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 module View
   class Presenter < SimpleDelegator
+
     include ActionView::Helpers::TextHelper
     include ActionView::Helpers::AssetUrlHelper
     include ActionView::Helpers::DateHelper
@@ -10,13 +11,7 @@ module View
     include ActionView::Helpers::TranslationHelper
     include ActionView::Helpers::UrlHelper
 
-
     protected
-
-    # Q:  Why isn't to_param being handled by method_missing?!  Investigate.
-    def to_param
-      presented.to_param
-    end
 
     def presented
       __getobj__
