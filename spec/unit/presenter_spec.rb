@@ -12,7 +12,7 @@ module View
     context 'when initializing' do
       it 'sets internal state' do
         presenter = presenter_class.new(presented)
-        expect(presenter.instance_variable_get(:@presented)).to eq presented
+        expect(presenter.send(:presented)).to eq presented
       end
     end
 
