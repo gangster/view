@@ -5,7 +5,6 @@ require 'view/component_helper'
 module View
   class Railtie < Rails::Railtie
     initializer 'extend ActionView' do
-      config.eager_load_namespaces << View
 
       ActiveSupport.on_load(:action_view) do
         self.class_eval do
